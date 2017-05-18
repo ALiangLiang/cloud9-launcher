@@ -39,10 +39,11 @@ class Project {
   }
 
   set port(port) {
-    // two way assign
+    console.log(port)
+      // two way assign
     if (port.isFree) {
       this._port = port;
-      port.project = this;
+      port._project = this;
     } else
       console.log('Ths port is not free. Used by project' + port.project.name);
   }

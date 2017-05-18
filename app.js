@@ -273,7 +273,7 @@ function runC9(port, project) {
       throw new Error('Cannot found port number.')
 
     const
-      script = `node /root/c9sdk/server.js -p ${runPort} -w ${workspace}  -a ${config.get('account')}:${config.get('password')}`,
+      script = `node /root/c9sdk/server.js -p ${runPort} -w ${workspace} -l 0.0.0.0 -a ${config.get('account')}:${config.get('password')}`,
       c9 = proc.run(script, {
           env: process.env
         },
@@ -342,7 +342,7 @@ function getC9(condition) {
 // Use project name to find out project.
 function getProject(name) {
   return projects.find((project) => project.name === name);
-}  
+}
 
 function popProject(name) {
   const index = projects.findIndex((project) => project.name === name);
