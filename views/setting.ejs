@@ -1,0 +1,53 @@
+<html>
+
+<head>
+	<% include head %>
+</head>
+
+<body>
+	<% include nav %>
+	
+	<div class="container" style="margin-top:60px">
+		<div class="panel panel-default">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">Free Ports</h3>
+		  </div>
+		  <div class="panel-body">
+		    <button type="button" class="btn btn-success">Add Port</button>
+		  </div>
+		  <table class="table">
+		  	<thead>
+		    	<tr>
+		    		<td>Port</td>
+		    		<td>Public</td>
+		    		<td>Used by</td>
+		    		<td>Controller</td>
+		    	</tr>
+		  	</thead>
+		    <tbody>
+					<% ports.forEach((port) => { %>
+			    	<tr>
+			    		<td><%= port.number %></td>
+			    		<td><%= 'unknown' %></td>
+			    		<td><%= (!port.isFree) ? port.project.name : '(is free)' %></td>
+			    		<td>
+							<form method="post" action="" target="_blank">
+									<button 
+										type="submit" 
+										name="target" 
+										class="btn btn-danger" 
+										value="port">
+									<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+									Remove
+								</button>
+							</form>
+			    		</td>
+			    	</tr>
+					<% }); %>
+		    </tbody>
+		  </table>
+		</div>
+	</div>
+</body>
+
+</html>

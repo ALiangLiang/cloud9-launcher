@@ -1,0 +1,25 @@
+{
+  "name": "cloud9-launcher",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "c9"
+  ],
+  "author": "ALiangLiang",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "config": "^1.26.1",
+    "ejs": "^2.5.6",
+    "express": "^4.15.3",
+    "http-proxy": "^1.16.2",
+    "http-proxy-middleware": "^0.17.4",
+    "netutil": "0.0.2",
+    "ping": "^0.2.2"
+  }
+}

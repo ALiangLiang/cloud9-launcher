@@ -1,0 +1,10 @@
+# node
+node_modules
+npm-debug*.log
+
+# this project
+config/*
+!config/default-0.json5
+
+# system
+tmux-*
