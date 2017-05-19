@@ -2,6 +2,11 @@
 
 It's a Nodejs application allows you manage your Cloud9 IDE workflows on your own server without the need of a terminal.
 
+### Feature
+
+- Manage your cloud9 processes.
+- GUI
+
 ### Install
 
 #### Cloud9 IDE
@@ -17,6 +22,14 @@ cp config/default-0.json5 config/local-0.json5
 vim config/local-0.json5 # fill this configure file
 npm start
 ```
+
+### TODO
+
+- Authorization
+- Auto find a port which allow inbound connection.
+- Pause c9 process.
+- Save changed settings.
+- Monitor processes on client side.
 
 ### About
 

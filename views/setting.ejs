@@ -39,9 +39,9 @@
 			    	<tr>
 			    		<td><%= port.number %></td>
 			    		<td><%= 'unknown' %></td>
-			    		<td><%= 'unknown' %></td>
-			    		<% console.log(port._project) %>
-			    		<td><%= (!port.isFree) ? port.project.name : '(is free)' %></td>
+			    		<td><%= (port.usableCache) ? 'Yes' : 'No' %></td>
+			    		<td><%= (port.project) ? port.project.name : 
+			    		  ((!port.usableCache) ? '(unknown)' : '(is free)') %></td>
 			    		<td>
 							<form method="post" action="" target="_blank">
 									<button

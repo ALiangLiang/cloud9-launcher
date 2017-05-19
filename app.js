@@ -5,12 +5,14 @@ const
   bodyParser = require('body-parser'),
   spawn = require('child_process').spawn,
   config = require('config'),
+  portfinder = require('portfinder'),
   Project = require('./Project'),
   Port = require('./Port'),
   app = express(),
   proc = cmd();
 
 const
+  isHttps = !!config.get('ssl') || false,
   TIMEOUT_TIME = config.get('limitTime') || 5000, // limit runC9 time.
   ports = [],
   projects = [],
@@ -34,26 +36,27 @@ app.use(bodyParser.urlencoded({
 app.get('/', function(req, res) {
   res.render('index', {
     projects: projects,
+    url: `http${(isHttps)?'s':''}:\/\/${config.get('c9Host')}`
   });
 });
 
 app.get('/setting', function(req, res) {
   res.render('setting', {
-    ports: ports,
+    ports: ports
   });
 });
 
 const api = express.Router();
 
 api.route('/launch')
-  .post(function(req, res) {
+  .post(async function(req, res) {
     const targetProjectName = req.body.target;
     const project = getProject(targetProjectName);
 
     if (!project)
-      return res.status(403).send({
+      return res.status(404).send({
         error: {
-          message: 'Cannot find the project by name'
+          message: 'Cannot find the project by name.'
         }
       });
 
@@ -61,7 +64,7 @@ api.route('/launch')
     if (project.isActive)
       return res.status(403).send({
         error: {
-          message: 'The project is running on port ' + project.port.number,
+          message: 'The project is running on port ' + project.port.number + '.',
           data: {
             port: project.port.number
           }
@@ -69,17 +72,17 @@ api.route('/launch')
       });
 
     // Find a free port and assign to target project.
-    const port = getFreePort();
+    const port = await getFreePort();
+
     if (!port)
-      return res.status(403).send({
+      return res.status(404).send({
         error: {
-          message: 'No free port. Please add some free ports.'
+          message: 'No free port. Please add or release some free ports.'
         }
       });
 
     runC9(port, project)
       .then(() => {
-        project.port = port; // two way assign
         res.send({
           succsess: {
             data: {
@@ -100,7 +103,7 @@ api.route('/launch')
     if (!project)
       return res.status(404).send({
         error: {
-          message: 'Cannot find the project by name'
+          message: 'Cannot find the project by name.'
         }
       });
 
@@ -190,9 +193,10 @@ api.route('/project')
   });
 
 api.route('/port')
-  .post(function(req, res) {
-    const portNumber = req.body.number;
-    if (!portNumber)
+  .post(async function(req, res) {
+    let portNumber = Number(req.body.number);
+
+    if (!portNumber || portNumber === 0)
       return res.status(403).send({
         error: {
           message: 'Lack of port number.'
@@ -200,6 +204,13 @@ api.route('/port')
       });
 
     const port = new Port(portNumber);
+
+    if (!await port.usable)
+      return res.status(403).send({
+        error: {
+          message: 'This port is unavailable.'
+        }
+      });
 
     ports.push(port);
 
@@ -229,7 +240,7 @@ app.use('/api', api);
 const
   sslConfig = config.get('ssl'),
   port = config.get('port') || 8080;
-if (sslConfig) {
+if (isHttps) {
   const option = {};
   for (let k in sslConfig)
     option[k] = fs.readFileSync(sslConfig[k]);
@@ -254,8 +265,9 @@ process.on('exit', function() {
 });
 
 // Return a free port.
+/* TODO: change to port.usable. */
 function getFreePort() {
-  return ports.find((port) => port.isFree);
+  return ports.find((port) => port.usableCache);
 }
 
 // Spawn a C9 process.
@@ -266,18 +278,18 @@ function runC9(port, project) {
 
     const workspace = project.path;
     if (!workspace)
-      throw new Error('Cannot found workspace.')
+      throw new Error('Cannot found workspace.');
 
     const runPort = port.number;
     if (!runPort)
-      throw new Error('Cannot found port number.')
+      throw new Error('Cannot found port number.');
 
     const
       script = `node /root/c9sdk/server.js -p ${runPort} -w ${workspace} -l 0.0.0.0 -a ${config.get('account')}:${config.get('password')}`,
       c9 = proc.run(script, {
           env: process.env
         },
-        function(stderr, stdout, code, signal) {
+        function() {
           env: process.env
         },
         function(stderr, stdout, code, signal) {
@@ -288,12 +300,11 @@ function runC9(port, project) {
       const stdout = data.toString();
       if (stdout.indexOf("Cloud9 is up and running") !== -1) {
         console.log('Cloud9 is up and running on ' + runPort);
+        project.c9 = c9;
+        project.port = port;
         resolve(runPort);
       }
     });
-
-    project.c9 = c9;
-    project.port = port;
   });
 }
 
@@ -316,7 +327,7 @@ function cmd() {
       stdout;
     oneoff.stdout.on('data', function(data) {
       stdout = data.toString();
-      console.log("stdout", data.toString());
+      // console.log("stdout", data.toString());
     });
     oneoff.stderr.on('data', function(data) {
       stderr = data.toString();

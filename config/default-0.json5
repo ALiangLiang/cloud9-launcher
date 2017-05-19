@@ -11,6 +11,8 @@
 	password: "password", // Password of basic authentication.
 	port: 8080, // Server post.
 	ports: [ 8081, 8082 ], // Free posts, Be sure these ports are public.
+	autoFindPort: true, // (Useless now) Auto find a random free public port.
+	c9Host: 'c9.foobar.com', // The host of cloud9 instances.
 	projects: [{
 		name: 'project1', // Used to display.
 		path: '/home/project1' // The absolute path of the project workspace.

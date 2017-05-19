@@ -38,8 +38,8 @@
 				</thead>
 				<tbody>
 					<% projects.forEach((project) => { %>
-				    	<tr>
-				    		<td><%= project.name %></td>
+				    	<tr class="<%= (project.isActive) ? 'success' : '' %>">
+				    		<td><%- (project.isActive) ? project.name.link(url + ':' + project.port.number ) : project.name %></td>
 				    		<td><%= project.path %></td>
 				    		<td>
 				    			<% if(!project.isActive) { %>
