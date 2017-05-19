@@ -2,7 +2,7 @@
 
 It's a Nodejs application allows you manage your Cloud9 IDE workflows on your own server without the need of a terminal.
 
-Read this in other languages: [English](REAMDE.md), [中文](README.zh-tw.md)
+Read this in other languages: [English](REAMDE.md), [正體中文](README.zh-tw.md)
 
 ![Screenshot](https://raw.githubusercontent.com/ALiangLiang/cloud9-launcher/master/screenshot.png)
 
