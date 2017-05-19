@@ -21,8 +21,8 @@ reference [c9/core](https://github.com/c9/core)
 ```sh
 git clone https://github.com/ALiangLiang/cloud9-launcher.git
 cd cloud9-launcher
-cp config/default-0.json5 config/local-0.json5
-vim config/local-0.json5 # fill this configure file
+npm run init
+vim ~/.config/configstore/cloud9-launcher.json # fill this configure file
 npm start
 ```
 

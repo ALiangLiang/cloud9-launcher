@@ -1,17 +1,23 @@
+require('json5/lib/require');
+
 const
   fs = require('fs'),
   URL = require('url'),
   express = require('express'),
   bodyParser = require('body-parser'),
   spawn = require('child_process').spawn,
-  config = require('config'),
+  Configstore = require('configstore'),
   basicAuth = require('express-basic-auth'),
+
   Project = require('./Project'),
   Port = require('./Port'),
-  app = express(),
-  proc = cmd();
+  defaultConfig = require('./config/default.json5'),
+  pkg = require('./package.json'),
 
-const
+  config = new Configstore(pkg.name, defaultConfig),
+  app = express(),
+  proc = cmd(),
+  
   isHttps = !!config.get('ssl') || false,
   TIMEOUT_TIME = config.get('limitTime') || 5000, // limit runC9 time.
   ports = [],
@@ -155,6 +161,8 @@ api.route('/project')
 
     projects.push(project);
 
+    updateProjectsConfig();
+
     return res.send({
       success: true
     });
@@ -172,6 +180,8 @@ api.route('/project')
         }
       });
     project.path = path;
+
+    updateProjectsConfig();
 
     if (project.isActive)
       return res.send({
@@ -195,6 +205,8 @@ api.route('/project')
         }
       });
 
+    updateProjectsConfig();
+
     res.send({
       success: true
     });
@@ -213,14 +225,16 @@ api.route('/port')
 
     const port = new Port(portNumber);
 
-    if (!await port.usable)
+    if (ports.find((portNum) => portNum === portNumber))
       return res.status(403).send({
         error: {
-          message: 'This port is unavailable.'
+          message: 'Already has same port in ports list.'
         }
       });
 
     ports.push(port);
+
+    updatePortsConfig();
 
     return res.send({
       success: true
@@ -237,6 +251,8 @@ api.route('/port')
         }
       });
 
+    updatePortsConfig();
+
     res.send({
       success: true
     });
@@ -250,8 +266,12 @@ const
   port = config.get('port') || 8080;
 if (isHttps) {
   const option = {};
-  for (let k in sslConfig)
-    option[k] = fs.readFileSync(sslConfig[k]);
+  for (let k in sslConfig) {
+    if (fs.existsSync(sslConfig[k]))
+      option[k] = fs.readFileSync(sslConfig[k]);
+    else
+      console.warn('Config: property of ' + k + ' is not a correct path.');
+  }
 
   require('https')
     .createServer(option, app)
@@ -393,4 +413,17 @@ function popPort(number) {
   const port = ports[index];
   ports.splice(index, 1);
   return port;
+}
+
+function updateProjectsConfig() {
+  config.set('projects', projects.map((project) => {
+    return {
+      name: project.name,
+      path: project.path
+    };
+  }));
+}
+
+function updatePortsConfig() {
+  config.set('ports', ports.map((port) => port.number));
 }

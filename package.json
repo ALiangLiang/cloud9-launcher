@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "init": "node tools/init.js",
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,11 +15,12 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.17.1",
-    "config": "^1.26.1",
+    "configstore": "^3.1.0",
     "ejs": "^2.5.6",
     "express": "^4.15.3",
     "express-basic-auth": "^1.0.2",
     "get-port": "^3.1.0",
+    "json5": "^0.5.1",
     "portfinder": "^1.0.13"
   }
 }
