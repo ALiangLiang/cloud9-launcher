@@ -2,6 +2,8 @@
 
 用圖形化介面管理你所有的 Cloud9 IDE，省下使用 CLI 的麻煩。
 
+其他語言的 README：[English](REAMDE.md), [中文](README.zh-tw.md)
+
 ![截圖](https://raw.githubusercontent.com/ALiangLiang/cloud9-launcher/master/screenshot.png)
 
 ### 特色

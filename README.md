@@ -2,6 +2,8 @@
 
 It's a Nodejs application allows you manage your Cloud9 IDE workflows on your own server without the need of a terminal.
 
+Read this in other languages: [English](REAMDE.md), [中文](README.zh-tw.md)
+
 ![Screenshot](https://raw.githubusercontent.com/ALiangLiang/cloud9-launcher/master/screenshot.png)
 
 ### Feature
@@ -36,4 +38,4 @@ npm start
 
 ### About
 
-This project is reference [c9ui](https://github.com/orditeck/c9ui). Coz I don't want to prepare environment about PHP 😛. BTW, I am not English-speaker. So if you discover some grammar error, please help me fixed and PR. lol
+This project is reference [c9ui](https://github.com/orditeck/c9ui). Coz I don't want to prepare environment about PHP 😛. BTW, I am not a English-speaker. So if you discover some grammar error, please help me fixed and PR. lol
