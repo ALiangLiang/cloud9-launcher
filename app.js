@@ -282,7 +282,10 @@ function getFreePort() {
 function runC9(port, project) {
   return new Promise((resolve, reject) => {
     // If over time we set, throw a error.
-    setTimeout(() => reject(new Error('TIMEOUT')), TIMEOUT_TIME);
+    setTimeout(() => {
+      /* TODO: need to check again is this cloud9 up. */
+      reject(new Error('TIMEOUT'));
+    }, TIMEOUT_TIME);
 
     const workspace = project.path;
     if (!workspace)
@@ -298,16 +301,16 @@ function runC9(port, project) {
           env: process.env
         },
         function() {
-          env: process.env
+          env: process.env;
         },
         function(stderr, stdout, code, signal) {
-          console.log("c9s died with", code, signal);
+          console.log('c9s died with', code, signal);
         });
 
     c9.stdout.on('data', function(data) {
       const stdout = data.toString();
-      if (stdout.indexOf("Cloud9 is up and running") !== -1) {
-        console.log('Cloud9 is up and running on ' + runPort);
+      if (stdout.indexOf('Cloud9 is up and running') !== -1) {
+        console.info(`Cloud9 of project "${project.name}"" is up and running on ${runPort}`);
         project.c9 = c9;
         project.port = port;
         resolve(runPort);

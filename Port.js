@@ -11,6 +11,7 @@ class Port {
 
   free() {
     this._project = void 0;
+    this._updateUsableCache();
   }
 
   get number() {

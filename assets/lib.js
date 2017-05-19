@@ -2,23 +2,41 @@
 /* global URL */
 /* global sweetAlert */
 function request(api, method, body) {
-  return fetch('/api/' + api, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    })
-    .then((response) => {
-      const jsonPromise = response.json();
-      console.log(jsonPromise)
-      if (response.ok)
-        return jsonPromise;
-      else
-        return jsonPromise.then((json) => {
-          throw json.error
-        });
+  if (window.XMLHttpRequest)
+    return new Promise((resolve, reject) => {
+      const xhr = new window.XMLHttpRequest();
+      xhr.open(method, '/api/' + api, true);
+      xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+      xhr.responseType = 'json';
+      xhr.onload = function(e) {
+        if (xhr.status > 399 && xhr.status < 600)
+          return reject(xhr.response);
+        resolve(xhr.response);
+      };
+      xhr.onabort = xhr.onerror = function(e) {
+        reject(e);
+      };
+      xhr.send(JSON.stringify(body));
     });
+  else
+    return fetch('/api/' + api, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          credentials: 'same-origin'
+        },
+        body: JSON.stringify(body)
+      })
+      .then((response) => {
+        const jsonPromise = response.json();
+        console.log(jsonPromise)
+        if (response.ok)
+          return jsonPromise;
+        else
+          return jsonPromise.then((json) => {
+            throw json.error
+          });
+      });
 }
 
 function launchProject(projectName) {
