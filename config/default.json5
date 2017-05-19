@@ -1,0 +1,21 @@
+// Recommend you copy this file into "local-0.json5". And replace the configs.
+{
+	ssl: { // ssl option. If you don't need https, remove this property.
+    key: "", // key absolute path
+    cert: "",
+    ca: ""
+	},
+	c9Path: "/home/c9sdk", // The absolute path of c9sdk.
+	nodePath: "node", // The absolute path of node. Or you can directed use "node".
+	account: "account", // Account of basic authentication.
+	password: "password", // Password of basic authentication.
+	port: 8080, // Server post.
+	ports: [ 8081, 8082 ], // Free posts, Be sure these ports are public.
+	autoFindPort: true, // (Useless now) Auto find a random free public port.
+	c9Host: 'c9.foobar.com', // The host of cloud9 instances.
+	projects: [{
+		name: 'project1', // Used to display.
+		path: '/home/project1' // The absolute path of the project workspace.
+	}],
+	limitTime: 5000 // Used to limit time of launching c9 process.
+}
