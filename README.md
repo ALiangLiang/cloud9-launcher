@@ -1,4 +1,4 @@
-## ️️☁️Cloud9 Launcher☁️ (In dev)
+## ️☁️Cloud9 Launcher☁️ (In dev)
 
 It's a Nodejs application allows you manage your Cloud9 IDE workflows on your own server without the need of a terminal.
 
@@ -9,6 +9,7 @@ It's a Nodejs application allows you manage your Cloud9 IDE workflows on your ow
 - Manage your cloud9 processes.
 - GUI
 - Use basic authorization
+- Don't need database to save setting.
 
 ### Install
 
@@ -31,7 +32,6 @@ npm start
 - Auto find a port which allow inbound connection.
 - Add arguments setting to node or c9.
 - Pause c9 process.
-- Save changed settings.
 - Monitor processes on client side.
 
 ### About
