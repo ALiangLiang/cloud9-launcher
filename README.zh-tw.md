@@ -1,8 +1,8 @@
-## ️☁️Cloud9 Launcher☁️ (開發中)
+## ️☁️Cloud9 Launcher🚀 (開發中)
 
 用圖形化介面管理你所有的 Cloud9 IDE，省下使用 CLI 的麻煩。
 
-其他語言的 README：[English](README.md), [正體中文](README.zh-tw.md)
+其他語言的 README：[English](REAMDE.md), [正體中文](README.zh-tw.md)
 
 ![截圖](https://raw.githubusercontent.com/ALiangLiang/cloud9-launcher/master/screenshot.png)
 
@@ -25,7 +25,7 @@
 git clone https://github.com/ALiangLiang/cloud9-launcher.git
 cd cloud9-launcher
 npm run init
-vim ~/.config/configstore/cloud9-launcher.json # 請填寫設定
+vim ~/.config/configstore/cloud9-launcher.json # 填寫設定
 npm start
 ```
 
@@ -38,4 +38,4 @@ npm start
 
 ### 關於
 
-這個專案是啟發自 [c9ui](https://github.com/orditeck/c9ui)，因為我是台灣人，所以這個專案中的英文如果有錯，麻煩幫我修一下順便 PR 上來，拜託各為了QQ
+這個專案是啟發自 [c9ui](https://github.com/orditeck/c9ui)。另外因為我不是很精通英文，所以這個專案中的英文如果有錯，麻煩幫我修一下順便 PR 上來，拜託各位了QQ
