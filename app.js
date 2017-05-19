@@ -5,7 +5,7 @@ const
   bodyParser = require('body-parser'),
   spawn = require('child_process').spawn,
   config = require('config'),
-  portfinder = require('portfinder'),
+  basicAuth = require('express-basic-auth'),
   Project = require('./Project'),
   Port = require('./Port'),
   app = express(),
@@ -25,6 +25,14 @@ const defaultProject = config.get('projects') || [];
 defaultProject.forEach((project) => projects.push(new Project(project)));
 
 app.set('view engine', 'ejs');
+
+const authConfig = {};
+authConfig[config.get('account')] = config.get('password');
+app.use(basicAuth({
+  users: authConfig,
+  challenge: true,
+  realm: 'Cloud9 Launcher'
+}));
 
 app.use('/assets', express.static('assets'));
 
