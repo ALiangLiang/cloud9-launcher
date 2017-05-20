@@ -1,11 +1,10 @@
-require('json5/lib/require');
+require('json5/lib/require'); // Override "require" function. Make "require" can load json5 format.
 
 const
   fs = require('fs'),
   URL = require('url'),
   express = require('express'),
   bodyParser = require('body-parser'),
-  spawn = require('child_process').spawn,
   Configstore = require('configstore'),
   basicAuth = require('express-basic-auth'),
 
@@ -16,22 +15,23 @@ const
 
   config = new Configstore(pkg.name, defaultConfig),
   app = express(),
-  proc = cmd(),
-  
+
   isHttps = !!config.get('ssl') || false,
   TIMEOUT_TIME = config.get('limitTime') || 5000, // limit runC9 time.
   ports = [],
   projects = [],
   c9s = [];
 
-// Initial config
+/* Initial config */
 const defaultPorts = config.get('ports') || [];
 defaultPorts.forEach((portNumber) => ports.push(new Port(portNumber)));
 const defaultProject = config.get('projects') || [];
 defaultProject.forEach((project) => projects.push(new Project(project)));
+Project.TIMEOUT_TIME = TIMEOUT_TIME;
 
 app.set('view engine', 'ejs');
 
+/* Basic auth */
 const authConfig = {};
 authConfig[config.get('account')] = config.get('password');
 app.use(basicAuth({
@@ -40,6 +40,7 @@ app.use(basicAuth({
   realm: 'Cloud9 Launcher'
 }));
 
+/* Static */
 app.use('/assets', express.static('assets'));
 
 app.use(bodyParser.json());
@@ -47,6 +48,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+/* Router */
 app.get('/', function(req, res) {
   res.render('index', {
     projects: projects,
@@ -62,7 +64,7 @@ app.get('/setting', function(req, res) {
 
 const api = express.Router();
 
-api.route('/launch')
+api.route('/launch') // used to open or close process
   .post(async function(req, res) {
     const targetProjectName = req.body.target;
     const project = getProject(targetProjectName);
@@ -95,20 +97,20 @@ api.route('/launch')
         }
       });
 
-    runC9(port, project)
-      .then(() => {
-        res.send({
-          succsess: {
-            data: {
-              port: port.number
-            }
+    try {
+      const runPortNumber = await project.start(port);
+      console.info(`Project "${project.name}" is running. Use port ${runPortNumber}.`);
+      res.send({
+        succsess: {
+          data: {
+            port: runPortNumber
           }
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        return res.status(403).send(err);
+        }
       });
+    } catch (err) {
+      console.error(err);
+      return res.status(403).send(err);
+    }
   })
   .delete(function(req, res) {
     const targetProjectName = req.body.target;
@@ -129,7 +131,10 @@ api.route('/launch')
         }
       });
 
-    const result = project.killC9();
+    const
+      usedPort = project.port.number,
+      result = project.stop();
+    console.info(`Project "${project.name}" is shutdown. Port ${usedPort} is free.`);
     if (result)
       return res.send({
         success: true
@@ -142,7 +147,7 @@ api.route('/launch')
       });
   });
 
-api.route('/project')
+api.route('/project') // used to add, edit or delete project setting.
   .post(function(req, res) {
     const
       projectName = req.body.name,
@@ -212,7 +217,7 @@ api.route('/project')
     });
   });
 
-api.route('/port')
+api.route('/port') // used to add or delete port setting
   .post(async function(req, res) {
     let portNumber = Number(req.body.number);
 
@@ -260,7 +265,7 @@ api.route('/port')
 
 app.use('/api', api);
 
-// Launch server
+// Launch UI server
 const
   sslConfig = config.get('ssl'),
   port = config.get('port') || 8080;
@@ -276,18 +281,18 @@ if (isHttps) {
   require('https')
     .createServer(option, app)
     .listen(port, function() {
-      console.log('Listening on port ' + port);
+      console.info('UI server listening on port ' + port);
     });
 } else
   app.listen(port, function() {
-    console.log('Listening on port ' + port);
+    console.info('UI server listening on port ' + port);
   });
 
 process.on('exit', function() {
   c9s.forEach((c9) => {
     if (c9 && c9.pid && !c9.killed) {
       process.kill(c9.pid);
-      console.log("c9 killed");
+      console.info('c9 killed');
     }
   });
 });
@@ -296,89 +301,6 @@ process.on('exit', function() {
 /* TODO: change to port.usable. */
 function getFreePort() {
   return ports.find((port) => port.usableCache);
-}
-
-// Spawn a C9 process.
-function runC9(port, project) {
-  return new Promise((resolve, reject) => {
-    // If over time we set, throw a error.
-    setTimeout(() => {
-      /* TODO: need to check again is this cloud9 up. */
-      reject(new Error('TIMEOUT'));
-    }, TIMEOUT_TIME);
-
-    const workspace = project.path;
-    if (!workspace)
-      throw new Error('Cannot found workspace.');
-
-    const runPort = port.number;
-    if (!runPort)
-      throw new Error('Cannot found port number.');
-
-    const
-      script = `node /root/c9sdk/server.js -p ${runPort} -w ${workspace} -l 0.0.0.0 -a ${config.get('account')}:${config.get('password')}`,
-      c9 = proc.run(script, {
-          env: process.env
-        },
-        function() {
-          env: process.env;
-        },
-        function(stderr, stdout, code, signal) {
-          console.log('c9s died with', code, signal);
-        });
-
-    c9.stdout.on('data', function(data) {
-      const stdout = data.toString();
-      if (stdout.indexOf('Cloud9 is up and running') !== -1) {
-        console.info(`Cloud9 of project "${project.name}"" is up and running on ${runPort}`);
-        project.c9 = c9;
-        project.port = port;
-        resolve(runPort);
-      }
-    });
-  });
-}
-
-function cmd() {
-  var command = {};
-  command.run = function(commandLine, _options, callback) {
-    var options,
-      __undefined__;
-    if (!callback && typeof _options === "function") {
-      callback = _options;
-      options = __undefined__;
-    } else if (typeof _options === "object") {
-      options = _options;
-    }
-    var args = commandLine.split(" ");
-    var cmd = args[0];
-    args.shift();
-    var oneoff = spawn(cmd, args, options);
-    var stderr,
-      stdout;
-    oneoff.stdout.on('data', function(data) {
-      stdout = data.toString();
-      // console.log("stdout", data.toString());
-    });
-    oneoff.stderr.on('data', function(data) {
-      stderr = data.toString();
-      console.log("stderr", data.toString());
-    });
-    oneoff.on('exit', function(code, signal) {
-      oneoff.killed = true;
-      if (typeof callback === "function")
-        callback(stderr, stdout, code, signal);
-    });
-    return oneoff;
-  };
-  return command;
-}
-
-function getC9(condition) {
-  if (condition.auth)
-    return c9s.find((c9) => c9.auth === condition.auth);
-  else if (condition.port)
-    return c9s.find((c9) => c9.port === condition.port);
 }
 
 // Use project name to find out project.
@@ -398,11 +320,6 @@ function popProject(name) {
   return project;
 }
 
-// Use port number to find out port object.
-function getPort(number) {
-  return ports.find((port) => port.number === number);
-}
-
 function popPort(number) {
   const index = ports.findIndex((port) => port.number === number);
   // If cannot find the port, return false.
@@ -415,6 +332,7 @@ function popPort(number) {
   return port;
 }
 
+// save projects to config file.
 function updateProjectsConfig() {
   config.set('projects', projects.map((project) => {
     return {
@@ -424,6 +342,7 @@ function updateProjectsConfig() {
   }));
 }
 
+// save ports to config file.
 function updatePortsConfig() {
   config.set('ports', ports.map((port) => port.number));
 }

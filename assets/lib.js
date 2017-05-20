@@ -1,4 +1,3 @@
-/* global fetch */
 /* global URL */
 /* global sweetAlert */
 function request(api, method, body) {
@@ -8,9 +7,9 @@ function request(api, method, body) {
       xhr.open(method, '/api/' + api, true);
       xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
       xhr.responseType = 'json';
-      xhr.onload = function(e) {
+      xhr.onload = function() {
         if (xhr.status > 399 && xhr.status < 600)
-          return reject(xhr.response);
+          return reject((xhr.response.error) ? xhr.response.error : xhr.response);
         resolve(xhr.response);
       };
       xhr.onabort = xhr.onerror = function(e) {
@@ -19,24 +18,7 @@ function request(api, method, body) {
       xhr.send(JSON.stringify(body));
     });
   else
-    return fetch('/api/' + api, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          credentials: 'same-origin'
-        },
-        body: JSON.stringify(body)
-      })
-      .then((response) => {
-        const jsonPromise = response.json();
-        console.log(jsonPromise)
-        if (response.ok)
-          return jsonPromise;
-        else
-          return jsonPromise.then((json) => {
-            throw json.error
-          });
-      });
+    sweetAlert('Error', 'Your browser doesn\' support XMLHttpRequest. Please update your browser to latest version.', 'error');
 }
 
 function launchProject(projectName) {
@@ -52,8 +34,8 @@ function launchProject(projectName) {
     })
     .then(() => document.location.reload())
     .catch((err) => {
-      console.log(err)
-      sweetAlert('Error', err.message, 'error')
+      console.log(err);
+      sweetAlert('Error', err.message, 'error');
     });
 }
 
