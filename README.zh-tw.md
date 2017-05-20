@@ -2,7 +2,7 @@
 
 用圖形化介面管理你所有的 Cloud9 IDE，省下使用 CLI 的麻煩。
 
-其他語言的 README：[English](REAMDE.md), [正體中文](README.zh-tw.md)
+其他語言的 README：[English](README.md), [正體中文](README.zh-tw.md)
 
 ![截圖](https://raw.githubusercontent.com/ALiangLiang/cloud9-launcher/master/screenshot.png)
 
@@ -18,6 +18,14 @@
 #### Cloud9 IDE
 
 請參考 [c9/core](https://github.com/c9/core)
+```sh
+git clone git://github.com/c9/core.git c9sdk
+cd c9sdk
+scripts/install-sdk.sh
+```
+真的很好安裝啦，不騙你。
+
+如果你想要讓你的 c9 ide 使用 https，你可以參考這篇 [issue](https://github.com/c9/core/issues/229)。
 
 #### Cloud9 Launcher
 

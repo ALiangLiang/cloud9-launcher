@@ -2,7 +2,7 @@
 
 It's a Nodejs application allows you manage your Cloud9 IDE workflows on your own server without the need of a terminal.
 
-Read this in other languages: [English](REAMDE.md), [正體中文](README.zh-tw.md)
+Read this in other languages: [English](README.md), [正體中文](README.zh-tw.md)
 
 ![Screenshot](https://raw.githubusercontent.com/ALiangLiang/cloud9-launcher/master/screenshot.png)
 
@@ -18,6 +18,14 @@ Read this in other languages: [English](REAMDE.md), [正體中文](README.zh-tw.
 #### Cloud9 IDE
 
 reference [c9/core](https://github.com/c9/core)
+```sh
+git clone git://github.com/c9/core.git c9sdk
+cd c9sdk
+scripts/install-sdk.sh
+```
+This is simple, isn't it?
+
+If you want your c9 use https, you can refer this [issue](https://github.com/c9/core/issues/229).
 
 #### Cloud9 Launcher
 
@@ -27,6 +35,12 @@ cd cloud9-launcher
 npm run init
 vim ~/.config/configstore/cloud9-launcher.json # fill this configure file
 npm start
+```
+
+### Update
+
+```sh
+git pull
 ```
 
 ### TODO
