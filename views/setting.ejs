@@ -36,11 +36,11 @@
 		  	</thead>
 		    <tbody>
 					<% ports.forEach((port) => { %>
-			    	<tr>
+			    	<tr class="<%= (!port.usableCache) ? 'warning' : '' %>">
 			    		<td><%= port.number %></td>
 			    		<td><%= 'unknown' %></td>
 			    		<td><%= (port.usableCache) ? 'Yes' : 'No' %></td>
-			    		<td><%= (port.project) ? port.project.name : 
+			    		<td><%= (port.project) ? port.project.name :
 			    		  ((!port.usableCache) ? '(unknown)' : '(is free)') %></td>
 			    		<td>
 							<form method="post" action="" target="_blank">
