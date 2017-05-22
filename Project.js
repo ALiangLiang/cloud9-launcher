@@ -96,7 +96,7 @@ function runC9(port, project) {
       throw new Error('Cannot found port number.');
 
     const
-      script = `node /root/c9sdk/server.js -p ${runPort} -w ${workspace} -l 0.0.0.0 -a ${config.get('account')}:${config.get('password')}`,
+      script = `node ${config.get('c9Path')}/server.js -p ${runPort} -w ${workspace} -l 0.0.0.0 -a ${config.get('account')}:${config.get('password')}`,
       c9 = proc.run(script, {
           env: process.env
         },
