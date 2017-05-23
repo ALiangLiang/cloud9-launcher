@@ -2,6 +2,9 @@
 
 用圖形化介面管理你所有的 Cloud9 IDE，省下使用 CLI 的麻煩。
 
+**更新(2017/5/23):**
+**我現在正在研究 [c9 core](https://github.com/c9/core) 中，目的是要找出一個，能夠像 [cloud9](https://c9.io/) 一樣只使用一個 port 便可以管理不同 workspace 的 c9**，目前是稍微有點頭緒，大概是建立一個 vps-server，並且讓使用者使用不同設定給「ide.html」，裡面包含有不同的 workspace 位置。
+
 其他語言的 README：[English](README.md), [正體中文](README.zh-tw.md)
 
 ![截圖](https://raw.githubusercontent.com/ALiangLiang/cloud9-launcher/master/screenshot.png)

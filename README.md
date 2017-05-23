@@ -2,6 +2,9 @@
 
 It's a Nodejs application allows you manage your Cloud9 IDE workflows on your own server without the need of a terminal.
 
+**UPDATE (2017/5/23):**
+**For now, I'm still researching [c9 core](https://github.com/c9/core) and find a method to generate multiple workspace in one port.** I guess the key is about "plugins". Create a vfs-server and use various settings to "ide.html" which contain difference workspace path.
+
 Read this in other languages: [English](README.md), [正體中文](README.zh-tw.md)
 
 ![Screenshot](https://raw.githubusercontent.com/ALiangLiang/cloud9-launcher/master/screenshot.png)
@@ -45,6 +48,7 @@ git pull
 
 ### TODO
 
+- Find a method to generate multiple workspace with one port.
 - Auto find a port which allow inbound connection.
 - Add arguments setting to node or c9.
 - Pause c9 process.
